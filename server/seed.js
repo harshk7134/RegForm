@@ -63,6 +63,4 @@ db.once('open', () => {
   
   // Call the function to seed the database
   seedDatabase();
-
-  export default {Country, State, City}
   

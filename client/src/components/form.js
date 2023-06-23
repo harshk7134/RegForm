@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import { differenceInYears } from 'date-fns';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('First Name is required').matches(/^[aA-zZ\s]+$/, "Only alphabets are allowed for this field "),
   lastName: Yup.string().required('Last Name is required').matches(/^[aA-zZ\s]+$/, "Only alphabets are allowed for this field "),
@@ -64,14 +63,15 @@ export default function Form() {
       fetchCities(formik.values.state);
     }
   }, [formik.values.countries, formik.values.state]);
-
   const fetchCountries = () => {
     // Make an API call to fetch the list of countries
     // Update the 'countries' state with the fetched data
     // Example:
-    fetch('/api/countries')
+    fetch('http://localhost:3300/api/countries')
       .then((response) => response.json())
-      .then((data) => setCountries(data))
+      .then((data) =>{
+      console.log('Fetched countries:', data);
+      setCountries(data) }) 
       .catch((error) => console.error(error));
   };
 
@@ -79,7 +79,7 @@ export default function Form() {
     // Make an API call to fetch the list of states for the selected country
     // Update the 'states' state with the fetched data
     // Example:
-    fetch(`/api/states?country=${country}`)
+    fetch(`http://localhost:3300/api/states?country=${country}`)
       .then((response) => response.json())
       .then((data) => setStates(data))
       .catch((error) => console.error(error));
@@ -89,7 +89,7 @@ export default function Form() {
     // Make an API call to fetch the list of cities for the selected state
     // Update the 'cities' state with the fetched data
     // Example:
-    fetch(`/api/cities?state=${state}`)
+    fetch(`http://localhost:3300/api/cities?state=${state}`)
       .then((response) => response.json())
       .then((data) => setCities(data))
       .catch((error) => console.error(error));
@@ -105,9 +105,11 @@ export default function Form() {
 
   return (
     <div className="container my-4">
-        <h2>Registration Form</h2>
+        
       <div className="row justify-content-center">
+      
         <div className="col-lg-6">
+        <h2>Registration Form</h2>
           <div className="card">
             <div className="card-body">
               <form onSubmit={formik.handleSubmit}>

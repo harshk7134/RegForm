@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 // Define the country schema
 const countrySchema = new mongoose.Schema({
     name: {
@@ -38,4 +39,5 @@ const countrySchema = new mongoose.Schema({
   const State = mongoose.model('State', stateSchema);
   const City = mongoose.model('City', citySchema);
 
-    export default { Country, State, City };
+  // Export the models
+module.exports = { Country, State, City };
