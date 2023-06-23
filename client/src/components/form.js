@@ -1,8 +1,10 @@
 import React,{useEffect,useState} from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import { differenceInYears } from 'date-fns';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('First Name is required').matches(/^[aA-zZ\s]+$/, "Only alphabets are allowed for this field "),
@@ -27,10 +29,12 @@ const validationSchema = Yup.object().shape({
 
 
 export default function Form() {
+
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-
+  const [age, setAge] = useState('');
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -40,33 +44,36 @@ export default function Form() {
       state: '',
       city: '',
       gender: '',
-      dateOfBirth: ''
+      dateOfBirth: '',
+      age: '',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      // Handle form submission, e.g., make API call to save the data
+      axios.post('http://localhost:3300/api/user-data', values)
+        .then((response) => {
+          console.log(response.data);
+          alert('User data saved successfully');
+          navigate('/showData', { state: { data: formik.values } });
+        })
       console.log(values);
     },
   });
   
   useEffect(() => {
-    // Fetch countries from API
+    
     fetchCountries();
 
-    // Fetch states based on selected country
+    
     if (formik.values.countries) {
       fetchStates(formik.values.countries);
     }
 
-    // Fetch cities based on selected state
     if (formik.values.state) {
       fetchCities(formik.values.state);
     }
   }, [formik.values.countries, formik.values.state]);
   const fetchCountries = () => {
-    // Make an API call to fetch the list of countries
-    // Update the 'countries' state with the fetched data
-    // Example:
+    
     fetch('http://localhost:3300/api/countries')
       .then((response) => response.json())
       .then((data) =>{
@@ -76,9 +83,7 @@ export default function Form() {
   };
 
   const fetchStates = (country) => {
-    // Make an API call to fetch the list of states for the selected country
-    // Update the 'states' state with the fetched data
-    // Example:
+    
     fetch(`http://localhost:3300/api/states?country=${country}`)
       .then((response) => response.json())
       .then((data) => setStates(data))
@@ -86,9 +91,7 @@ export default function Form() {
   };
 
   const fetchCities = (state) => {
-    // Make an API call to fetch the list of cities for the selected state
-    // Update the 'cities' state with the fetched data
-    // Example:
+   
     fetch(`http://localhost:3300/api/cities?state=${state}`)
       .then((response) => response.json())
       .then((data) => setCities(data))
@@ -99,6 +102,7 @@ export default function Form() {
     const today = new Date();
     const birthDate = new Date(dob);
     const age = differenceInYears(today, birthDate);
+    setAge(age)
   
     formik.setFieldValue('age', age);
   };

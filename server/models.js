@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-// Define the country schema
+const { Schema } = mongoose;
 const countrySchema = new mongoose.Schema({
     name: {
       type: String,
@@ -8,7 +8,7 @@ const countrySchema = new mongoose.Schema({
     },
   });
   
-  // Define the state schema
+  
   const stateSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -21,7 +21,7 @@ const countrySchema = new mongoose.Schema({
     },
   });
   
-  // Define the city schema
+
   const citySchema = new mongoose.Schema({
     name: {
       type: String,
@@ -33,11 +33,60 @@ const countrySchema = new mongoose.Schema({
       required: true,
     },
   });
+
+
+
+  const UserSchema = new Schema({
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    gender:{
+      type: String,
+      required: true,
   
-  // Create the models
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    country: {
+      type:String,
+      required: true,
+    },
+    state: {
+     type:String,
+      required: true,
+    },
+  
+    city: {
+      type:String,
+      required: true,
+    },
+    dob: {
+      type: Date,
+      required: true,
+      },
+    age : {
+      type: Number,
+      required: true,
+      },
+  
+  
+  });
+  
+  
+  const User = mongoose.model('User', UserSchema);
+
+
+  
   const Country = mongoose.model('Country', countrySchema);
   const State = mongoose.model('State', stateSchema);
   const City = mongoose.model('City', citySchema);
 
-  // Export the models
-module.exports = { Country, State, City };
+module.exports = { Country, State, City ,User};

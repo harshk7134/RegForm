@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 
 const router = express.Router();
-const { Country, State, City } = require('../models');
+const { Country, State, City,User } = require('../models');
 const { connect, connection } = require('mongoose');
 
 
@@ -12,16 +12,16 @@ connect(dbConnectionString, {
   useUnifiedTopology: true,
 });
 
-// Create a connection object
+
 const db = connection;
 
-// Event handlers for successful connection and error
+
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-// Route to fetch countries
+
 router.get('/countries', async (req, res) => {
   try {
     const countries = await Country.find({}, 'name');
@@ -35,13 +35,12 @@ router.get('/countries', async (req, res) => {
 router.get('/states', async (req, res) => {
   const { country } = req.query;
   try {
-    // Find the country by name
+    
     const countryObj = await Country.findOne({ name: country });
     if (!countryObj) {
       return res.status(404).json({ error: 'Country not found' });
     }
 
-    // Retrieve states based on the country ObjectId
     const states = await State.find({ country: countryObj._id }, 'name');
     res.json(states);
   } catch (err) {
@@ -50,18 +49,41 @@ router.get('/states', async (req, res) => {
   }
 });
 
+router.post('/user-data', async (req, res) => {
+     console.log(req.body);
+  
+  
+  const user = new User({
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    gender: req.body.gender,
+    email: req.body.email,
+    country: req.body.countries,
+    state: req.body.state,
+    city: req.body.city,
+    dob: req.body.dateOfBirth,
+    age: req.body.age,
+  }
+  )
 
-// Route to fetch cities based on state ID
-// router.get('/cities', async (req, res) => {
-//   const { state } = req.query;
-//   try {
-//     const cities = await City.find({ state: state }, 'name');
-//     res.json(cities);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Error retrieving cities from the database');
-//   }
-// });
+  console.log(user);
+  
+   
+
+  try {
+    const newUser = await user.save();
+    res.json(newUser);
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).send('Error saving the user');
+  }
+});
+
+
+
+
+
 router.get('/cities', async (req, res) => {
   const { state } = req.query;
   try {
